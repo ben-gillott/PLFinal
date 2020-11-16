@@ -1,0 +1,5 @@
+let double = lambda x : Int. x + x in
+let reapply = lambda f : Int -> Int. lambda x : Int. f (f x) in
+let quadruple = reapply double in
+let hexadecatuple = reapply quadruple in
+hexadecatuple 5
