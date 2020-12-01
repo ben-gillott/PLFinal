@@ -1,120 +1,55 @@
 %{
-  open Ast
-  open Printf
-  open Lexing
-
-  let tuple_type ts =
-  match ts with
-  | [t] -> t
-  | _ -> TTuple ts
-
-  let tuple_expr es =
-  match es with
-  | [e] -> e
-  | _ -> Tuple es
+open Ast
 %}
 
-%token <string> VAR TNAME
-%token LPAREN RPAREN DOT COLON EOF
-%token LAMBDA ARROW
-%token LET EQUALS IN
 %token <int> INT
-%token PLUS MINUS LESS GREATER
-%token IF THEN ELSE TRUE FALSE AND OR NOT
-%token EMPTY CONS MATCH WEMPTY WHDREST LIST
-%token COMMA STAR
-%token FIX
+%token <string> ID
+%token TRUE
+%token FALSE
+%token LEQ
+%token TIMES  
+%token PLUS
+%token LPAREN
+%token RPAREN
+%token LET
+%token EQUALS
+%token IN
+%token IF
+%token THEN
+%token ELSE
+%token EOF
 
-%type <Ast.exp> prog
+%nonassoc IN
+%nonassoc ELSE
+%left LEQ
+%left PLUS
+%left TIMES  
 
-%start prog
+%start <Ast.expr> prog
 
 %%
-prog: exp EOF                           { $1 }
 
-exp:
-    | LET VAR EQUALS exp IN exp         { Let($2, $4, $6) }
-    | texp                              { $1 }
-
-texp:
-    | tlist                             { tuple_expr $1 }
-
-tlist:
-    | fexp COMMA tlist                  { $1::$3 }
-    | fexp                              { [$1] }
-
-fexp:
-    | FIX lexp                          { Fix($2) }
-    | lexp                              { $1 }
-
-lexp:
-    | LAMBDA VAR COLON typ DOT fexp     { Lam($2, $4, $6) }
-    | mexp                              { $1 }
-
-mexp: 
-    | MATCH exp WEMPTY exp WHDREST fexp { Match($2, $4, $6) }
-    | ifexp                             { $1 }
-
-ifexp:
-    | IF unexp THEN exp ELSE fexp       { If($2, $4, $6) }
-    | unexp                             { $1 }
-
-unexp:
-    | NOT unexp                         { Unary(Not, $2) }
-    | boolbinexp                        { $1 }
-
-boolbinexp:
-    | boolbinexp AND cmpexp             { Binary(And, $1, $3) }
-    | boolbinexp OR cmpexp              { Binary(Or, $1, $3) }
-    | cmpexp                            { $1 }
-
-cmpexp:
-    | cmpexp LESS consexp               { Binary(Less, $1, $3) }
-    | cmpexp GREATER consexp            { Binary(Greater, $1, $3) }
-    | cmpexp EQUALS consexp             { Binary(Equal, $1, $3) }
-    | consexp                           { $1 }
-
-consexp:
-    | plusexp CONS consexp               { Binary(Cons, $1, $3) }
-    | plusexp                            { $1 }
-
-plusexp:
-    | plusexp PLUS multexp              { Binary(Plus, $1, $3) }
-    | plusexp MINUS multexp             { Binary(Minus, $1, $3) }
-    | multexp                           { $1 }
-
-multexp:
-    | multexp STAR appexp              { Binary(Times, $1, $3) }
-    | appexp                           { $1 }
-
-appexp:
-    | appexp pexp                       { App($1, $2) }
-    | pexp                              { $1 }
-
-pexp:
-    | pexp DOT INT                      { Proj($1, $3) }
-    | aexp                              { $1 }
-
-aexp:
-    | VAR                               { Var($1) }
-    | INT                               { Int($1) }
-    | TRUE                              { True }
-    | FALSE                             { False }
-    | EMPTY COLON atyp                  { Empty($3) }
-    | LPAREN exp RPAREN                 { $2 }
-
-typ:
-    | ftyp                              { $1 }
-
-ftyp:
-    | atyp ARROW ftyp                   { TFun($1, $3) }
-    | ttlist                            { tuple_type $1 }
-
-ttlist:
-    | atyp STAR ttlist                  { $1::$3 }
-    | atyp                              { [$1] }
-
-atyp:
-    | TNAME                             { TBase($1) }
-    | LIST atyp                         { TList($2) } 
-    | LPAREN typ RPAREN                 { $2 }                   
+/*  Rule format
+name:
+    | production1 { action1 }
+    | production2 { action2 }
+    | ...
+    ; 
+*/
+prog:
+	| e = expr; EOF { e }
+	;
+	
+expr:
+	| i = INT { Int i }
+	| x = ID { Var x }
+	| TRUE { Bool true }
+	| FALSE { Bool false }
+	| e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) }
+	| e1 = expr; TIMES; e2 = expr { Binop (Mult, e1, e2) } 
+	| e1 = expr; PLUS; e2 = expr { Binop (Add, e1, e2) }
+	| LET; x = ID; EQUALS; e1 = expr; IN; e2 = expr { Let (x, e1, e2) }
+	| IF; e1 = expr; THEN; e2 = expr; ELSE; e3 = expr { If (e1, e2, e3) }
+	| LPAREN; e=expr; RPAREN {e} 
+	;
+	
