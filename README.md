@@ -14,10 +14,8 @@ type "make" to enter utop
 
 parse:
 Example use
-    # parse "let x = 3110 in x + x";;
-    - : expr = Let ("x", Int 3110, Binop (Add, Var "x", Var "x"))
-    parse expr;;
-
-typecheck (expression)
+    let exprOut = parse "let x = 3110 in x + x";;
+        //yields Let ("x", Int 3110, Binop (Add, Var "x", Var "x"))
+    typecheck exprOut;;
 
 
