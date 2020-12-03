@@ -1,2 +1,0 @@
-let l = 5 :: (empty : Int) in
-match l with_empty 0 with_head_rest (lambda p: (Int * List Int). p.0)
