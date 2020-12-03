@@ -5,6 +5,10 @@ CS 4110 Final Project - Beta
 Ocamlyyx code taken from the textbook at: https://www.cs.cornell.edu/courses/cs3110/2019sp/textbook/interp/intro.html
 
 
+Requires:
+opam install ocamlfind
+opam install ocamlbuild
+
 ===Build===
 type "make" to enter utop
 
@@ -15,3 +19,5 @@ Example use
     parse expr;;
 
 typecheck (expression)
+
+
