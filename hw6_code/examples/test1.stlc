@@ -1,0 +1,2 @@
+(lambda f : Int -> Int. (lambda x : Int. f (f (x + x))))
+(lambda x : Int. x + 5) 16
