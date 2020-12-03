@@ -10,9 +10,20 @@ opam install ocamlfind
 opam install ocamlbuild
 
 ===Build===
-type "make" to enter utop
+make clean
+    Remove any byte files and the _build folder
 
-parse:
+make build
+    Build the project without running it
+    
+make test
+    Run the tests in the test folder
+
+make
+    build and enter utop
+
+While in utop there are two functions, parse (string) and typecheck (expression)
+
 Example use
     let exprOut = parse "let x = 3110 in x + x";;
         //yields Let ("x", Int 3110, Binop (Add, Var "x", Var "x"))
