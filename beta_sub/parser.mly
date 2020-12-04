@@ -17,6 +17,7 @@ open Ast
 %token IF
 %token THEN
 %token ELSE
+%token VECTOR2
 %token EOF
 
 %nonassoc IN
@@ -38,6 +39,7 @@ expr:
 	| x = ID { Var x }
 	| TRUE { Bool true }
 	| FALSE { Bool false }
+	| VECTOR2; e1 = expr; e2 = expr {Vector2(e1, e2)}
 	| e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) }
 	| e1 = expr; TIMES; e2 = expr { Binop (Mult, e1, e2) } 
 	| e1 = expr; PLUS; e2 = expr { Binop (Add, e1, e2) }
