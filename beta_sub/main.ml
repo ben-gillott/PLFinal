@@ -10,6 +10,7 @@ let parse (s : string) : expr =
 type typ =
   | TInt
   | TBool
+  | TVector2
 
 (** The error message produced if a variable is unbound. *)
 let unbound_var_err = "Unbound variable"
@@ -68,6 +69,7 @@ open Context
 let rec typeof ctx = function
   | Int _ -> TInt
   | Bool _ -> TBool
+  | Vector2 _ -> TVector2
   | Var x -> lookup ctx x
   | Let (x, e1, e2) -> typeof_let ctx x e1 e2
   | Binop (bop, e1, e2) -> typeof_bop ctx bop e1 e2
@@ -105,8 +107,13 @@ let typecheck e =
 
 (** [is_value e] is whether [e] is a value. *)
 let is_value : expr -> bool = function
-  | Int _ | Bool _ -> true
+  | Int _ | Bool _ | Vector2 _ -> true
   | Var _ | Let _ | Binop _ | If _ -> false
+
+(** [is_value e] is whether [e] is a int. *)
+let is_int : expr -> bool = function
+| Int _ -> true
+| Var _ | Let _ | Binop _ | If _ | Bool _ | Vector2 _ -> false
 
 (** [subst e v x] is [e] with [v] substituted for [x], that
     is, [e{v/x}]. *)
@@ -114,6 +121,7 @@ let rec subst e v x = match e with
   | Var y -> if x = y then v else e
   | Bool _ -> e
   | Int _ -> e
+  | Vector2 (e1, e2) -> Vector2(subst e1 v x, subst e2 v x)
   | Binop (bop, e1, e2) -> Binop (bop, subst e1 v x, subst e2 v x)
   | Let (y, e1, e2) ->
     let e1' = subst e1 v x in
@@ -128,10 +136,18 @@ let rec subst e v x = match e with
 let rec step : expr -> expr = function
   | Int _ | Bool _ -> failwith "Does not step"
   | Var _ -> failwith unbound_var_err
+  | Vector2 (e1, e2) when is_value e1 && is_value e2 ->
+      failwith "Does not step"
+  | Vector2 (e1, e2) when is_value e2 -> 
+      Vector2 (step e1, e2)
+  | Vector2 (e1, e2) when is_value e1 -> 
+      Vector2 (e1, step e2)
+  | Vector2 (e1, e2) ->  
+      Vector2 (step e1, step e2)
   | Binop (bop, e1, e2) when is_value e1 && is_value e2 -> 
-    step_bop bop e1 e2
+      step_bop bop e1 e2
   | Binop (bop, e1, e2) when is_value e1 ->
-    Binop (bop, e1, step e2)
+      Binop (bop, e1, step e2)
   | Binop (bop, e1, e2) -> Binop (bop, step e1, e2)
   | Let (x, e1, e2) when is_value e1 -> subst e2 e1 x
   | Let (x, e1, e2) -> Let (x, step e1, e2)
@@ -164,6 +180,7 @@ let interp_small (s : string) : expr =
 (** [eval_big e] is the [e ==> v] relation. *)
 let rec eval_big (e : expr) : expr = match e with
   | Int _ | Bool _ -> e
+  | Vector2(e1, e2) -> Vector2(eval_big e1, eval_big e2)
   | Var _ -> failwith unbound_var_err
   | Binop (bop, e1, e2) -> eval_bop bop e1 e2
   | Let (x, e1, e2) -> subst e2 (eval_big e1) x |> eval_big
