@@ -18,6 +18,9 @@ rule read =
   | "+" { PLUS }
   | "(" { LPAREN }
   | ")" { RPAREN }
+  | "{" { LBRACK }
+  | "}" { RBRACK }
+  | "tagged" { TAGGED }
   | "let" { LET }
   | "=" { EQUALS }
   | "in" { IN }

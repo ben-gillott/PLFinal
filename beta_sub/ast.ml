@@ -13,3 +13,4 @@ type expr =
   | Let of string * expr * expr
   | If of expr * expr * expr
   | Vector2 of expr * expr
+  | TaggedExpr of expr * string

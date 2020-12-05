@@ -71,6 +71,7 @@ let rec typeof ctx = function
   | Bool _ -> TBool
   | Vector2 _ -> TVector2
   | Var x -> lookup ctx x
+  | TaggedExpr (e, s) -> typeof ctx e
   | Let (x, e1, e2) -> typeof_let ctx x e1 e2
   | Binop (bop, e1, e2) -> typeof_bop ctx bop e1 e2
   | If (e1, e2, e3) -> typeof_if ctx e1 e2 e3
@@ -102,18 +103,21 @@ and typeof_if ctx e1 e2 e3 =
 
 (** [typecheck e] checks whether [e] is well typed in
     the empty context. Raises: [Failure] if not. *)
+(* TODO: Implement type checking here *)
 let typecheck e =
   ignore (typeof empty e)
 
 (** [is_value e] is whether [e] is a value. *)
 let is_value : expr -> bool = function
   | Int _ | Bool _ | Vector2 _ -> true
-  | Var _ | Let _ | Binop _ | If _ -> false
+  | _ -> false
+  (* | Var _ | Let _ | Binop _ | If _ | TaggedExpr _ -> false *)
 
 (** [is_value e] is whether [e] is a int. *)
 let is_int : expr -> bool = function
 | Int _ -> true
-| Var _ | Let _ | Binop _ | If _ | Bool _ | Vector2 _ -> false
+| _ -> false
+(* | Var _ | Let _ | Binop _ | If _ | Bool _ | Vector2 _ -> false *)
 
 (** [subst e v x] is [e] with [v] substituted for [x], that
     is, [e{v/x}]. *)
@@ -121,7 +125,6 @@ let rec subst e v x = match e with
   | Var y -> if x = y then v else e
   | Bool _ -> e
   | Int _ -> e
-  | Vector2 (e1, e2) -> Vector2(subst e1 v x, subst e2 v x)
   | Binop (bop, e1, e2) -> Binop (bop, subst e1 v x, subst e2 v x)
   | Let (y, e1, e2) ->
     let e1' = subst e1 v x in
@@ -130,6 +133,8 @@ let rec subst e v x = match e with
     else Let (y, e1', subst e2 v x)
   | If (e1, e2, e3) -> 
     If (subst e1 v x, subst e2 v x, subst e3 v x)
+  | Vector2 (e1, e2) -> Vector2(subst e1 v x, subst e2 v x)
+  | TaggedExpr (e1, s) -> subst e v x
 
 (** [step] is the [-->] relation, that is, a single step of 
     evaluation. *)
@@ -155,6 +160,7 @@ let rec step : expr -> expr = function
   | If (Bool false, _, e3) -> e3
   | If (Int _, _, _) -> failwith if_guard_err
   | If (e1, e2, e3) -> If (step e1, e2, e3)
+  | TaggedExpr (e1, s) -> step e1
 
 (** [step_bop bop v1 v2] implements the primitive operation
     [v1 bop v2].  Requires: [v1] and [v2] are both values. *)
@@ -185,6 +191,7 @@ let rec eval_big (e : expr) : expr = match e with
   | Binop (bop, e1, e2) -> eval_bop bop e1 e2
   | Let (x, e1, e2) -> subst e2 (eval_big e1) x |> eval_big
   | If (e1, e2, e3) -> eval_if e1 e2 e3
+  | TaggedExpr (e1, s) -> eval_big e1
 
 (** [eval_bop bop e1 e2] is the [e] such that [e1 bop e2 ==> e]. *)
 and eval_bop bop e1 e2 = match bop, eval_big e1, eval_big e2 with

@@ -11,6 +11,9 @@ open Ast
 %token PLUS
 %token LPAREN
 %token RPAREN
+%token RBRACK
+%token LBRACK
+%token TAGGED
 %token LET
 %token EQUALS
 %token IN
@@ -39,12 +42,16 @@ expr:
 	| x = ID { Var x }
 	| TRUE { Bool true }
 	| FALSE { Bool false }
-	| VECTOR2; e1 = expr; e2 = expr {Vector2(e1, e2)}
+	| VECTOR2; LPAREN; e1 = expr; e2 = expr; RPAREN {Vector2(e1, e2)}
 	| e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) }
 	| e1 = expr; TIMES; e2 = expr { Binop (Mult, e1, e2) } 
 	| e1 = expr; PLUS; e2 = expr { Binop (Add, e1, e2) }
 	| LET; x = ID; EQUALS; e1 = expr; IN; e2 = expr { Let (x, e1, e2) }
 	| IF; e1 = expr; THEN; e2 = expr; ELSE; e3 = expr { If (e1, e2, e3) }
 	| LPAREN; e=expr; RPAREN {e} 
+	|  LPAREN; e1 = expr; RPAREN; TAGGED; LBRACK; x = ID; RBRACK {TaggedExpr (e1, x)}
 	;
+
+	/* nonterminal value, subset of first 4, Int var bool expr, in parentheses */
+	/* subset of expr lexing */
 	
