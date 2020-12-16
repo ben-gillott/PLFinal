@@ -6,7 +6,8 @@ let white = [' ' '\t']+
 let digit = ['0'-'9']
 let int = '-'? digit+
 let letter = ['a'-'z' 'A'-'Z']
-let id = letter+
+let char = ['0'-'9' 'a'-'z' 'A'-'Z']
+let string = letter char*
 
 rule read = 
   parse
@@ -20,6 +21,8 @@ rule read =
   | ")" { RPAREN }
   | "{" { LBRACK }
   | "}" { RBRACK }
+  | "," { COMMA }
+  | ":" {COLON}
   | "tagged" { TAGGED }
   | "let" { LET }
   | "=" { EQUALS }
@@ -28,6 +31,6 @@ rule read =
   | "then" { THEN }
   | "else" { ELSE }
   | "vector2" { VECTOR2 }
-  | id { ID (Lexing.lexeme lexbuf) }
   | int { INT (int_of_string (Lexing.lexeme lexbuf)) }
+  | string { STRING (Lexing.lexeme lexbuf) }
   | eof { EOF }

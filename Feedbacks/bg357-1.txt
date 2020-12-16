@@ -1,0 +1,29 @@
+Summary:
+
+  This project is aimed at improving safety in graphics systems by differentiating between different geometries at the type level. This will result in fewer bugs by, for example, preventing cartesian vectors from accidently being used as polar vectors.
+
+ 
+
+Strengths:
+
+  The author has selected a concrete problem which provides clear direction. They chose to first introduce their idea in a language similar to those we have studied during lecture which allowed them to focus on developing the details of the TAGS early on in the development.
+
+ 
+
+Suggestions:
+
+  Perhaps it is too late to introduce this idea, but dependent types seem like they would lend themselves nicely to your T.A.G.S. project. Vectors could have types like:
+
+ 
+
+     PI cart. int * int
+
+or
+
+     PI polr. int * int
+
+ 
+
+Then operations like addition could enforce that only vectors using the same geometry can be added.
+
+ 

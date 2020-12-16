@@ -1,0 +1,7 @@
+jgs272
+
+This is a really cool project! As a linguistics student this sounds like something that could really be expanded upon. 
+
+I think one thing that would improve this would be to add language specific logic, not just sugar. I dont know spanish very well but for example some non english languages have different expressions of time and order, or more specific ways of expressing imperitaves. Maybe try to find something that is uniquely expressed in spanish, and then implement that as a feature.
+
+A possible "further work" (probably out of the scope of this class) would be to implement a language fully based on generics, that could then be fed a list of vocab for each language, and then output a programming language for each input language. 

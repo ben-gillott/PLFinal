@@ -1,0 +1,4 @@
+cg527
+This programming language sounds totally radical. I wasn't able to get the image examples to load, but looked at a few examples in the old rockstar language for reference.
+
+The amount of work you've done is definitely impressive. The only suggestion i would have for the final is if you have an idea for one, maybe to implement something that was not done in either rockstar or in other languages. Maybe something silly PL wise but metal related, like automatically formatting into verses, or type checking for rhyme schemes.

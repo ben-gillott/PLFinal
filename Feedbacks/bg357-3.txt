@@ -1,0 +1,7 @@
+Netid: bg357
+
+Summary: The project is a programming language implementation focusing on the idea of tagged values. These tagged values can be used to force correctness by requiring values of an expression to have the correct tag. This was inspired by computer graphics bugs, and has this application(ie reducing computer graphics bugs) in mind.
+
+Strengths: The project features a language feature that we haven't seen in class, and I personally haven't seen in another language. I liked the idea of writing a programming language with unique features like this(that's the idea of my projec too), so I enjoyed reading about your project. I think tags are interesting and I can see how this feature could be very useful, especially after your nexts steps are completed. 
+
+Suggestions: I don't know the extent of the base-level of your language(the non-TAGS parts), but I would suggest perhaps expanding on that. Nothing too extreme, just something like functions or references or that sort of thing to allow for more use-cases for tags(and the language in general). That being said, this could just be based on the examples given. If the base language and vectors have enough to them already then disregard this.

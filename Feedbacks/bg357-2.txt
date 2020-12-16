@@ -1,0 +1,22 @@
+Feedback for NetID: bg357
+
+Summary:
+The main goal of this project is to help enforcing typing when dealing with numbers
+and vectors framed in a computer graphics context. It will help by allowing the user
+to manually define the type(s) of an Integer or Vector expression, and then enforce that
+only expressions that are operating on values of the same type(s) can be executed.
+
+Strengths: 
+I really like the concept behind this project, I have dealt with the confusions
+of subtle computer graphics bugs and appreciate how helpful a type system such
+as this could be. Secondly, I really like how the use can define the type of the
+value/expression as it provides more flexibility and adaptability to the typing system.
+
+Suggestions: 
+I think the project is going down a good path, especially with the allowing of
+multiple tags. One suggeston for a system with multiple tags is that it may be
+good to have an idea of a type heirarchy. Otherwise it may be cumbersome to check
+multiple types at once. This would also lead to a smooth transition to including subtyping,
+which would also be a very interesting feature. One example that could be interesting
+to think about in this context would be how to handle two values with cartesian and
+homogenous coordinate types and how the type checking should occur.

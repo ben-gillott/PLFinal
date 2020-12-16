@@ -1,0 +1,21 @@
+1 - Reformat tag types
+    a - add type in AST
+type tag = Tag of string * string
+type tags = Tags of tag list
+
+    b - Implement type in lexer
+e1 = expr; TAGGED; LBRACK; space = STRING; EQUALS; value = STRING; RBRACK
+parse "1 tagged {space = cart}";;
+TaggedExpr (Var "1", Tag ("space", "cart"))
+
+Bit of trouble because need a tag list, but dont know how to implement in lexer. For now just using one tag.
+
+Was issue with string / id defn. Removed id and changed defn of string to (letter char*), so it must
+ start with a letter but can include numbers.
+ this allows things such as:
+ "(1) tagged {test:test}";;
+ "(1) tagged {test1:test2}";;
+
+ Difficulties in lexer making the tag list hard, using single tags for now.
+
+ Working on typechecking less naievely.

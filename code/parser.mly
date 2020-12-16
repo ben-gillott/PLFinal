@@ -3,7 +3,8 @@ open Ast
 %}
 
 %token <int> INT
-%token <string> ID
+/* %token <string> ID */
+%token <string> STRING
 %token TRUE
 %token FALSE
 %token LEQ
@@ -13,6 +14,8 @@ open Ast
 %token RPAREN
 %token RBRACK
 %token LBRACK
+%token COMMA
+%token COLON
 %token TAGGED
 %token LET
 %token EQUALS
@@ -22,7 +25,6 @@ open Ast
 %token ELSE
 %token VECTOR2
 %token EOF
-
 %nonassoc IN
 %nonassoc ELSE
 %left LEQ
@@ -39,17 +41,17 @@ prog:
 	
 expr:
 	| i = INT { Int i }
-	| x = ID { Var x }
+	| x = STRING { Var x }
 	| TRUE { Bool true }
 	| FALSE { Bool false }
-	| VECTOR2; LPAREN; e1 = expr; e2 = expr; RPAREN {Vector2(e1, e2)}
+	| VECTOR2; LPAREN; e1 = expr; COMMA; e2 = expr; RPAREN {Vector2(e1, e2)}
 	| e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) }
 	| e1 = expr; TIMES; e2 = expr { Binop (Mult, e1, e2) } 
 	| e1 = expr; PLUS; e2 = expr { Binop (Add, e1, e2) }
-	| LET; x = ID; EQUALS; e1 = expr; IN; e2 = expr { Let (x, e1, e2) }
+	| LET; x = STRING; EQUALS; e1 = expr; IN; e2 = expr { Let (x, e1, e2) }
 	| IF; e1 = expr; THEN; e2 = expr; ELSE; e3 = expr { If (e1, e2, e3) }
 	| LPAREN; e=expr; RPAREN {e} 
-	|  LPAREN; e1 = expr; RPAREN; TAGGED; LBRACK; x = ID; RBRACK {TaggedExpr (e1, x)}
+	| LPAREN; e=expr; RPAREN; TAGGED; LBRACK; s = STRING; COLON; v = STRING; RBRACK {TaggedExpr (e, Tag(s, v))}
 	;
 
 	/* nonterminal value, subset of first 4, Int var bool expr, in parentheses */
