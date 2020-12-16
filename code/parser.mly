@@ -51,7 +51,7 @@ expr:
 	| LET; x = STRING; EQUALS; e1 = expr; IN; e2 = expr { Let (x, e1, e2) }
 	| IF; e1 = expr; THEN; e2 = expr; ELSE; e3 = expr { If (e1, e2, e3) }
 	| LPAREN; e=expr; RPAREN {e} 
-	| LPAREN; e=expr; RPAREN; TAGGED; LBRACK; s = STRING; COLON; v = STRING; RBRACK {TaggedExpr (e, Tag(s, v))}
+	| LPAREN; e=expr; RPAREN; TAGGED; LBRACK; s = STRING; COLON; v = STRING; RBRACK {TaggedExpr (e, (s, v))}
 	;
 
 	/* nonterminal value, subset of first 4, Int var bool expr, in parentheses */

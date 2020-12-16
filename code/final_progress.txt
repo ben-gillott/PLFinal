@@ -19,3 +19,11 @@ Was issue with string / id defn. Removed id and changed defn of string to (lette
  Difficulties in lexer making the tag list hard, using single tags for now.
 
  Working on typechecking less naievely.
+
+ Made a function to check if tags match
+    if space1 is the same as space two
+        then the values must match
+        if they dont match -> non valid
+        if they do match -> valid
+    if the spaces are not the same  -> valid
+//NOTE: Prohibitive vs allowing,

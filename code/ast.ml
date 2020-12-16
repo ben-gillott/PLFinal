@@ -4,7 +4,7 @@ type bop =
   | Mult
   | Leq
 
-type tag = Tag of string * string
+type tag = string * string
 (* type tags = Tags of tag list *)
 
 (** The type of the abstract syntax tree (AST). *)

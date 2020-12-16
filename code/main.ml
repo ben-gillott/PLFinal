@@ -106,14 +106,38 @@ and typeof_if ctx e1 e2 e3 =
     the empty context. Raises: [Failure] if not. *)
 
 
-    (* TODO: Implement type checking here *)
+
+
+(* 
+    type typ =
+      | TInt
+      | TBool
+      | TVector2
+      | TTagged of typ * tag *)
+
+
+
+
+let tagsAreCompatible (s1,v1) (s2,v2) = 
+  if ((s1 = s2) && (v1 <> v2)) then false else true
+ 
+(* TODO: Implement type checking here *)
 let typecheck e =
-  ignore (typeof empty e)
+  match e with
+  (* | Var v -> typeof *)
+  (* | Int of int *)
+  (* | Bool of bool *)
+  | Binop of bop * expr * expr
+  (* | Let of string * expr * expr *)
+  (* | If of expr * expr * expr *)
+  (* | Vector2 of expr * expr *)
+  (* | TaggedExpr of expr * tag *)
+  |_ -> ignore (typeof empty e)
 
 
 
 
-  
+
 
 (** [is_value e] is whether [e] is a value. *)
 let is_value : expr -> bool = function
