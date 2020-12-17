@@ -27,3 +27,35 @@ Was issue with string / id defn. Removed id and changed defn of string to (lette
         if they do match -> valid
     if the spaces are not the same  -> valid
 //NOTE: Prohibitive vs allowing,
+
+let tInt : expr = Int 1;;
+let tTag = Tag ("hi", "bye");;
+let tTE = TaggedExpr (tInt, tTag);; 
+
+match tTE with
+    |TaggedExpr(e, Tag(t1, t2)) -> e
+    |_ -> Int 1;;
+
+
+Type of typ for tagged expressions is just TTagged(typ, tag)
+-Retains the tag 
+
+Issue of nested tags:
+-check the top level each time
+-store recursively
+Tagged(Tagged(Tagged(Int))) + Tagged(Int)
+how should this be typechecked
+    -below is an expr so only check the top level
+how should this be evaluated
+    ????
+    1 - discard the top tag
+    2 - keep the tags forever
+    3 - lists - future work
+
+Tag + Tag = ?
+If compatible, for now just take the first one
+Really just need tag lists to fix this, but cant without knowing how to lex lists
+
+Will also need to ensure that all tags given to an object dont conflict
+
+*Show Binop match statements from typeof function

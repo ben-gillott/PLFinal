@@ -28,6 +28,8 @@ let if_branch_err = "Branches of if must have same type"
     of an [if] does not have type [bool]. *)
 let if_guard_err = "Guard of if must have type bool"
 
+let tag_mismatch = "Tags of same space must have matching values"
+
 (** A [Context] is a mapping from variable names to
     types, aka a symbol table, aka a typing environment. *)
 module type Context = sig
@@ -65,6 +67,15 @@ end
 
 open Context
 
+
+
+
+
+let tagsAreCompatible tag1 tag2 = 
+  match (tag1, tag2) with
+  | (Tag(s1, v1), Tag(s2, v2))
+    -> if ((s1 = s2) && (v1 <> v2)) then false else true
+
 (** [typeof ctx e] is the type of [e] in context [ctx]. 
     Raises: [Failure] if [e] is not well typed in [ctx]. *)
 let rec typeof ctx = function
@@ -72,9 +83,23 @@ let rec typeof ctx = function
   | Bool _ -> TBool
   | Vector2 _ -> TVector2
   | Var x -> lookup ctx x
-  | TaggedExpr (e, t) -> TTagged(typeof ctx e, t)
+  (* The type of a tagged expression is TTagged with the original tag and typ Type *)
+  | TaggedExpr (e, t) -> TTagged(typeof ctx e, t) 
   | Let (x, e1, e2) -> typeof_let ctx x e1 e2
-  | Binop (bop, e1, e2) -> typeof_bop ctx bop e1 e2
+  | Binop (bop, e1, e2) -> (
+    match (e1, e2) with
+    (* Two tags in a binop must be compatible. If so, pass on the first tag *)
+    |(TaggedExpr(te1, tag1), TaggedExpr(te2, tag2)) 
+      ->if (tagsAreCompatible tag1 tag2) 
+          (*The first tag is inherited. If tag lists were implemented the tags would be combined here*)
+          then TTagged(typeof_bop ctx bop te1 te2, tag1)
+          else failwith tag_mismatch
+    |(TaggedExpr(te1, tag1), _) 
+      -> TTagged(typeof_bop ctx bop te1 e2, tag1)
+    |(_, TaggedExpr(te2, tag2)) 
+      -> TTagged(typeof_bop ctx bop e1 te2, tag2)
+    |_ -> typeof_bop ctx bop e1 e2
+  )
   | If (e1, e2, e3) -> typeof_if ctx e1 e2 e3
 
 (** Helper function for [typeof]. *)
@@ -104,40 +129,8 @@ and typeof_if ctx e1 e2 e3 =
 
 (** [typecheck e] checks whether [e] is well typed in
     the empty context. Raises: [Failure] if not. *)
-
-
-
-
-(* 
-    type typ =
-      | TInt
-      | TBool
-      | TVector2
-      | TTagged of typ * tag *)
-
-
-
-
-let tagsAreCompatible (s1,v1) (s2,v2) = 
-  if ((s1 = s2) && (v1 <> v2)) then false else true
- 
-(* TODO: Implement type checking here *)
 let typecheck e =
-  match e with
-  (* | Var v -> typeof *)
-  (* | Int of int *)
-  (* | Bool of bool *)
-  | Binop of bop * expr * expr
-  (* | Let of string * expr * expr *)
-  (* | If of expr * expr * expr *)
-  (* | Vector2 of expr * expr *)
-  (* | TaggedExpr of expr * tag *)
-  |_ -> ignore (typeof empty e)
-
-
-
-
-
+  ignore (typeof empty e)
 
 (** [is_value e] is whether [e] is a value. *)
 let is_value : expr -> bool = function
