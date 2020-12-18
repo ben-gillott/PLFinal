@@ -68,13 +68,12 @@ end
 open Context
 
 
-
-
-
 let tagsAreCompatible tag1 tag2 = 
   match (tag1, tag2) with
   | (Tag(s1, v1), Tag(s2, v2))
     -> if ((s1 = s2) && (v1 <> v2)) then false else true
+
+
 
 (** [typeof ctx e] is the type of [e] in context [ctx]. 
     Raises: [Failure] if [e] is not well typed in [ctx]. *)
@@ -114,7 +113,7 @@ let rec typeof ctx = function
       |_ -> typeof_bop ctx bop e1 e2
   )
   | If (e1, e2, e3) -> typeof_if ctx e1 e2 e3
-
+  
 (** Helper function for [typeof]. *)
 and typeof_let ctx x e1 e2 = 
   let t1 = typeof ctx e1 in
@@ -140,10 +139,12 @@ and typeof_if ctx e1 e2 e3 =
   end
   else failwith if_guard_err
 
+
+
 (** [typecheck e] checks whether [e] is well typed in
     the empty context. Raises: [Failure] if not. *)
 let typecheck e =
-  ignore (typeof empty e)
+  typeof empty e
 
 (** [is_value e] is whether [e] is a value. *)
 let is_value : expr -> bool = function
@@ -218,7 +219,7 @@ let rec eval_small (e : expr) : expr =
     and evaluating it with the small-step model. *)
 let interp_small (s : string) : expr =
   let e = parse s in
-  typecheck e;
+  ignore(typecheck e);
   eval_small e
 
 (** [eval_big e] is the [e ==> v] relation. *)
@@ -248,7 +249,7 @@ and eval_if e1 e2 e3 = match eval_big e1 with
     and evaluating it with the big-step model. *)
 let interp_big (s : string) : expr =
   let e = parse s in
-  typecheck e;
+  ignore(typecheck e);
   eval_big e
 
 

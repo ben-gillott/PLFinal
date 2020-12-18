@@ -63,3 +63,5 @@ Will also need to ensure that all tags given to an object dont conflict
 typeof Context.empty vTes;;
 
 let vTes = Vector2(Int 1, Int 2);;
+
+Add simple helper to the typeof function, if no context just call typeof with empty context

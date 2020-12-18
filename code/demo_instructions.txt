@@ -1,0 +1,58 @@
+Introduction:
+
+The basic expression type is
+type expr
+    This contains the basics of: variables, integers, booleans, 
+    binary operators, let expressions, and if expressions of the form:
+        | Var of string
+        | Int of int
+        | Bool of bool
+        | Binop of bop * expr * expr
+        | Let of string * expr * expr
+        | If of expr * expr * expr
+
+    As well as two special types, which I will explain later, of the form:
+        | Vector2 of expr * expr
+        | TaggedExpr of expr * tag
+
+The typechecker runs on an expression and results in a "failwith" or a type of the form:
+type typ
+    This contains the types 
+        | TInt
+        | TBool
+    and
+        | TVector2 of typ * typ
+        | TTagged of typ * tag
+
+
+Run instructions:
+To make the project type "make build" to compile, and "make" to compile and run.
+And "make clean" removes all compiled files.
+
+
+Utop:
+This project currently runs as an extension of the ocaml command line using utop. 
+Typing "make" will enter utop, where we can execute the exampels listed below.
+Each command listed below will be of the format
+    #command;;
+Results will be of the format:
+    - : type  = value (or similar)
+Please copy the "command;;" portion, ignoring the demarking #. 
+To exit utop at any point type #exit 0;; or similar command.
+
+
+Parsing and typechecking:
+We lex and parse an expression from a string, for example, run:
+    #let intExpr = parse "1";;
+    which yields "val intExpr : expr = Int 1", a basic integer expression. 
+Then check that the type is valid and return the type if it is by running:
+    #typecheck intExpr;;
+    Which gives "typ = TInt".
+
+
+Now for some more interesting examples.
+As described in the writeup, the goal of this project 
+"1 tagged {space = cart}";;
+
+Notes:
+*if you want previously instantiated variables to work in "typecheck" function you must call it witht the first paramete of a generated context to the "typeof" function. The default is the empty context for simplicity. 
