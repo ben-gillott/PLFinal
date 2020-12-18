@@ -59,3 +59,7 @@ Really just need tag lists to fix this, but cant without knowing how to lex list
 Will also need to ensure that all tags given to an object dont conflict
 
 *Show Binop match statements from typeof function
+
+typeof Context.empty vTes;;
+
+let vTes = Vector2(Int 1, Int 2);;

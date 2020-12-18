@@ -10,7 +10,7 @@ let parse (s : string) : expr =
 type typ =
   | TInt
   | TBool
-  | TVector2
+  | TVector2 of typ * typ
   | TTagged of typ * tag
 
 (** The error message produced if a variable is unbound. *)
@@ -81,24 +81,37 @@ let tagsAreCompatible tag1 tag2 =
 let rec typeof ctx = function
   | Int _ -> TInt
   | Bool _ -> TBool
-  | Vector2 _ -> TVector2
+  | Vector2 (e1, e2) -> (
+      match (e1, e2) with
+      (* Two tags in a binop must be compatible. If so, pass on the first tag *)
+      |(TaggedExpr(te1, tag1), TaggedExpr(te2, tag2)) 
+        ->if (tagsAreCompatible tag1 tag2) 
+            (*The first tag is inherited. If tag lists were implemented the tags would be combined here*)
+            then TTagged(TVector2(typeof ctx e1, typeof ctx e2), tag1)
+            else failwith tag_mismatch
+      |(TaggedExpr(te1, tag1), _) 
+        -> TTagged(TVector2(typeof ctx e1, typeof ctx e2), tag1)
+      |(_, TaggedExpr(te2, tag2)) 
+        -> TTagged(TVector2(typeof ctx e1, typeof ctx e2), tag2)
+      |_ -> TVector2(typeof ctx e1, typeof ctx e2)
+  )
   | Var x -> lookup ctx x
   (* The type of a tagged expression is TTagged with the original tag and typ Type *)
   | TaggedExpr (e, t) -> TTagged(typeof ctx e, t) 
   | Let (x, e1, e2) -> typeof_let ctx x e1 e2
   | Binop (bop, e1, e2) -> (
-    match (e1, e2) with
-    (* Two tags in a binop must be compatible. If so, pass on the first tag *)
-    |(TaggedExpr(te1, tag1), TaggedExpr(te2, tag2)) 
-      ->if (tagsAreCompatible tag1 tag2) 
-          (*The first tag is inherited. If tag lists were implemented the tags would be combined here*)
-          then TTagged(typeof_bop ctx bop te1 te2, tag1)
-          else failwith tag_mismatch
-    |(TaggedExpr(te1, tag1), _) 
-      -> TTagged(typeof_bop ctx bop te1 e2, tag1)
-    |(_, TaggedExpr(te2, tag2)) 
-      -> TTagged(typeof_bop ctx bop e1 te2, tag2)
-    |_ -> typeof_bop ctx bop e1 e2
+      match (e1, e2) with
+      (* Two tags in a binop must be compatible. If so, pass on the first tag *)
+      |(TaggedExpr(te1, tag1), TaggedExpr(te2, tag2)) 
+        ->if (tagsAreCompatible tag1 tag2) 
+            (*The first tag is inherited. If tag lists were implemented the tags would be combined here*)
+            then TTagged(typeof_bop ctx bop te1 te2, tag1)
+            else failwith tag_mismatch
+      |(TaggedExpr(te1, tag1), _) 
+        -> TTagged(typeof_bop ctx bop te1 e2, tag1)
+      |(_, TaggedExpr(te2, tag2)) 
+        -> TTagged(typeof_bop ctx bop e1 te2, tag2)
+      |_ -> typeof_bop ctx bop e1 e2
   )
   | If (e1, e2, e3) -> typeof_if ctx e1 e2 e3
 
