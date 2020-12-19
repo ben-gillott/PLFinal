@@ -124,9 +124,14 @@ and typeof_let ctx x e1 e2 =
 and typeof_bop ctx bop e1 e2 =
   let t1, t2 = typeof ctx e1, typeof ctx e2 in
   match bop, t1, t2 with
-  | Add, TInt, TInt 
+  | Add, TInt, TInt
   | Mult, TInt, TInt -> TInt
   | Leq, TInt, TInt -> TBool
+  | Add, TVector2(_,_), TVector2(_,_) ->(
+    match bop, e1, e2 with
+    | Add, Vector2 (e11,e12), Vector2(e21,e22) -> TVector2((typeof_bop ctx bop e11 e12),(typeof_bop ctx bop e21 e22))
+    |_ -> failwith bop_err
+    )
   | _ -> failwith bop_err
 
 (** Helper function for [typeof]. *)
@@ -237,6 +242,7 @@ and eval_bop bop e1 e2 = match bop, eval_big e1, eval_big e2 with
   | Add, Int a, Int b -> Int (a + b)
   | Mult, Int a, Int b -> Int (a * b)
   | Leq, Int a, Int b -> Bool (a <= b)
+  | Add, Vector2 (v11, v12), Vector2 (v21, v22) -> Vector2 (Binop(Add,v11,v21), Binop(Add,v12,v22))
   | _ -> failwith bop_err
 
 (** [eval_if e1 e2 e3] is the [e] such that [if e1 then e2 else e3 ==> e]. *)
