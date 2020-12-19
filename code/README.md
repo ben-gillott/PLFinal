@@ -28,6 +28,12 @@ make
 
 While in utop there are two functions, parse (string) and typecheck (expression)
 
+
+See full list of examples in the demo pdf.
+
+
+
+
 Example base language use:
     let exprOut = parse "let x = 3110 in x + x";;
         //yields Let ("x", Int 3110, Binop (Add, Var "x", Var "x"))
